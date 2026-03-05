@@ -1,10 +1,10 @@
 {
-  "name": "ex03_js",
+  "name": "ex05_async_mjs",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

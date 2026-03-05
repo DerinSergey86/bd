@@ -12,9 +12,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  },
-  "dependencies": {
-    "dotenv": "^17.3.1"
   }
 }
 
