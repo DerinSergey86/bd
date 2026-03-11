@@ -1,3 +1,15 @@
+function testFunction() {
+  // return "Hello!";
+  return new Promise((resolve, reject) => {
+     setTimeout(() => {
+       resolve("Hello!");
+       // reject("Some error!");
+     }, 5000);
+  });
+}
+
+console.log("App Started!");
+
 // function testAsyncFunction() {
 //     return new Promise((resolve, reject) => {
 //     setTimeout(() => {
