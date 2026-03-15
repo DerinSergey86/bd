@@ -16,7 +16,9 @@ if(argv.length === 2) {
 
 // Копипаста вывода справки по запросу const param1 = argv[3];
 
-if(['-h', '--help'].includes(param1)) {
+const help = argv[2];
+
+if(['-h', '--help'].includes(help)) {
     showHelp();
     exit(0);
 }
@@ -51,7 +53,7 @@ for (const param of argv) { // перебор массива
 
     if(param.startsWith('c=')) {
         const splittedC = param.split('=');
-        с = +splittedC[1];
+        c = +splittedC[1];
         if(a && b && c) {
             break;
         }
