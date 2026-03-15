@@ -1,53 +1,62 @@
-import { stdin, stdout, argv, exit, stderr } from 'node:process';
+import { stdout, argv, exit, stderr } from 'node:process';
 
-// function showHelp(){
-//     console.log("Example arguments: a=2 b=5 c=3");
-// }
+// Справка 
 
-// if(argv.length === 3) {
-//     showHelp();
-//     exit(0);
-// }
+function showHelp(){
+    console.log("Input: node index.js a=... b=... c=... ");
+    console.log("Example arguments: a=2 b=5 c=3");
+}
 
-//  console.log('argv', argv);
+// При отсутствии аргументов программа должна выводить справку в stdout с кодом 1
 
-// const param1 = argv[3];
+if(argv.length === 2) {
+    showHelp();
+    exit(1);
+}
 
-// if(['-h', '--help'].includes(param1)) {
-//     showHelp();
-//     exit(0);
-// }
+// Копипаста вывода справки по запросу const param1 = argv[3];
+
+if(['-h', '--help'].includes(param1)) {
+    showHelp();
+    exit(0);
+}
+
+// создадим массив введённых аргументов отбросив технические строки
+
+// let args = process.argv.slice(2);
+
+// Создание переменных
 
 let a 
 let b 
 let c 
 
-// for (const param of argv) {
+for (const param of argv) { // перебор массива
 
-//     if(param.startsWith('a=')) {
-//         const splittedA = param.split('=');
-//         a = +splittedA[2];
-//         if(a && b && c) {
-//             break;
-//         }
-//     }
+    if(param.startsWith('a=')) { // если параметр начинается с а=
+        const splittedA = param.split('='); // определяем массив с значением аргумента а во втором элементе
+        a = +splittedA[1]; // приводим значение элемента к числу
+        if(a && b && c) { // проверка ввода аргументов
+            break;
+        }
+    }
 
-//     if(param.startsWith('b=')) {
-//         const splittedB = param.split('=');
-//         b = +splittedB[2];
-//         if(a && b && c) {
-//             break;
-//         }
-//     }
+    if(param.startsWith('b=')) {
+        const splittedB = param.split('=');
+        b = +splittedB[1];
+        if(a && b && c) {
+            break;
+        }
+    }
 
-//     if(param.startsWith('c=')) {
-//         const splittedC = param.split('=');
-//         с = +splittedC[2];
-//         if(a && b && c) {
-//             break;
-//         }
-//     }
-// }
+    if(param.startsWith('c=')) {
+        const splittedC = param.split('=');
+        с = +splittedC[1];
+        if(a && b && c) {
+            break;
+        }
+    }
+}
 
 // определение дискриминанта D
 
