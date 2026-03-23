@@ -1,11 +1,4 @@
-import http from 'node:http';
-
-// Create a local server to receive data from
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({
-    data: 'Hello World!',
-  }));
-});
-
+import {createServer} from 'node:http';
+import { mainHandler } from './mainHandler.js';
+const server = createServer(mainHandler);
 server.listen(3000);
