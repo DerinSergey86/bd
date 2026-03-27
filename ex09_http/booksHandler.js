@@ -1,3 +1,6 @@
+import DataSource from "./dataSource.js";
+const dataSource = new DataSource('db/database.json')
+
 export const booksHandler = ((req, res) => {
 
   const {method, url} = req;
@@ -8,6 +11,7 @@ export const booksHandler = ((req, res) => {
           const queryString = urlSplitted[1]; //FIXME
 
           const urlArr = urlString.split('/');
+          
           //console.log('urlArr', urlArr, urlArr.length);
 
           let id = null;
@@ -30,20 +34,10 @@ export const booksHandler = ((req, res) => {
       case 'GET':
           if(id) {
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(`{
-            "id": 1,
-            "name": "Преступление и наказание",
-            "author": "Ф.М. Достоевский",
-            "description": "Социально-психологический роман Фёдора Достоевского (1866), повествующий о бедном студенте Родионе Раскольникове, который убивает старуху-процентщицу, чтобы проверить теорию о «право имеющих» людях."
-        }`);
+            res.end(JSON.stringify(dataSource.getOne(id)));
           } else {
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(`[{
-            "id": 1,
-            "name": "Преступление и наказание",
-            "author": "Ф.М. Достоевский",
-            "description": "Социально-психологический роман Фёдора Достоевского (1866), повествующий о бедном студенте Родионе Раскольникове, который убивает старуху-процентщицу, чтобы проверить теорию о «право имеющих» людях."
-        }]`);
+            res.end(JSON.stringify(dataSource.getAll()));
           }
             return;
       case 'PATCH':
