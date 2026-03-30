@@ -56,14 +56,17 @@ export default class DataSource {
             throw new Error('DB - Inconsistent database!')
         }
 
-        this.storage.push({
+        const newItem = {
             id,
             title: payload.title,
             author: payload.author,
             description: payload.description
-        });
+        };
+
+        this.storage.push(newItem);
 
         this.serialize();
+        return newItem;
     }
 
     update(id, payload){

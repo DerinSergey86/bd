@@ -20,8 +20,6 @@ export const mainHandler = (req, res) => {
         return defaultHandler(req, res);
     } catch(e){
         return errorHandler (req, res, e);
-    }
-
-
+    }  
     
 };

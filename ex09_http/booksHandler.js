@@ -20,38 +20,35 @@ export const booksHandler = ((req, res) => {
             id = +urlArr[urlArr.length-1]; //FIXME:
           }
 
+  let re = null;
 
   switch (method) {
       case 'POST':
+        re = JSON.stringify(dataSource.create({title: 'HardCode Name', author: 'HardCode Author', description: 'HardCode Description'})); // FIXME: HARDCODE
         res.writeHead(201, {'Content-Type': 'application/json'});
-        res.end(`{
-            "id": 1,
-            "name": "Преступление и наказание",
-            "author": "Ф.М. Достоевский",
-            "description": "Социально-психологический роман Фёдора Достоевского (1866), повествующий о бедном студенте Родионе Раскольникове, который убивает старуху-процентщицу, чтобы проверить теорию о «право имеющих» людях."
-}`);
+        res.end(re);
         return;
       case 'GET':
           if(id) {
+            const re =JSON.stringify(dataSource.getOne(id));
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(dataSource.getOne(id)));
+            res.end(re);
           } else {
+            re =JSON.stringify(dataSource.getAll());
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(dataSource.getAll()));
+            res.end(re);
           }
             return;
       case 'PATCH':
       case 'PUT':
+        dataSource.update(id, {author: 'HardCode'}); // FIXME: HARDCODE
+        re = JSON.stringify(dataSource.getOne(id));
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(`{
-            "id": 1,
-            "name": "Преступление и наказание!",
-            "author": "Ф.М. Достоевский",
-            "description": "Социально-психологический роман Фёдора Достоевского (1866), повествующий о бедном студенте Родионе Раскольникове, который убивает старуху-процентщицу, чтобы проверить теорию о «право имеющих» людях."
-}`);
+        res.end(re);
         return;
       case 'DELETE':
-        res.writeHead(204,);
+        dataSource.delete(id);
+        res.writeHead(204);
         res.end(null);
         return;
 }
