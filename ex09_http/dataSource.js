@@ -1,139 +1,142 @@
-import {existsSync, writeFileSync, readFileSync, mkdirSync} from "node:fs";
-import {dirname} from "node:path";
+import { existsSync, writeFileSync, readFileSync, mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 export default class DataSource {
+  storage = [];
 
-    storage =[];
+  dbFile = null;
 
-    dbFile = null;
+  constructor(dbFile) {
+    this.dbFile = dbFile;
+    const dbDir = dirname(this.dbFile);
 
-    constructor(dbFile) {
-
-        this.dbFile = dbFile;
-        const dbDir = dirname(this.dbFile)
-
-        if(!existsSync(dbDir)) {
-            mkdirSync(dbDir, {recursive: true});
-        }
-
-        if (existsSync(this.dbFile)) {
-           // console.log("yes");
-            this.deserialize();
-        } else {
-            this.serialize();
-          // writeFileSync(this.dbFile, '1');
-        }
+    if (!existsSync(dbDir)) {
+      mkdirSync(dbDir, { recursive: true });
     }
 
-    serialize() {
-        const dbJSON = JSON.stringify(this.storage);
-        writeFileSync(this.dbFile, dbJSON);
+    if (existsSync(this.dbFile)) {
+      // console.log("yes");
+      this.deserialize();
+    } else {
+      this.serialize();
+      // writeFileSync(this.dbFile, '1');
+    }
+  }
+
+  serialize() {
+    const dbJSON = JSON.stringify(this.storage);
+    writeFileSync(this.dbFile, dbJSON);
+  }
+
+  deserialize() {
+    const dbJSON = readFileSync(this.dbFile);
+    this.storage = JSON.parse(dbJSON);
+  }
+
+  getAll() {
+    return this.storage;
+  }
+
+  create(payload) {
+    if (
+      !(
+        payload.hasOwnProperty("title") &&
+        payload.hasOwnProperty("author") &&
+        payload.hasOwnProperty("description")
+      )
+    ) {
+      throw new Error("DB:create - Wrong payload");
     }
 
-    deserialize() {
-        const dbJSON = readFileSync(this.dbFile);
-        this.storage = JSON.parse(dbJSON);
+    let id = 0;
+    if (!this.storage.length) {
+      id++;
+    } else {
+      id = 1 + Math.max(...this.storage.map((item) => item.id)) || 1;
     }
 
-    getAll() {
-        return this.storage;
+    const found = this.storage.find((item) => {
+      return item.id === id;
+    });
+
+    if (found) {
+      throw new Error("DB - Inconsistent database!");
     }
 
-    create(payload) {
+    const newItem = {
+      id,
+      title: payload.title,
+      author: payload.author,
+      description: payload.description,
+    };
 
-        if(!(payload.hasOwnProperty('title') && 
-        payload.hasOwnProperty('author') && 
-        payload.hasOwnProperty('description'))) {
-            throw new Error('DB: create - Wrong payload');
-        }
+    this.storage.push(newItem);
 
-        let id = 1 + Math.max(...this.storage.map((item) => item.id));
+    this.serialize();
+    return newItem;
+  }
 
-        const found = this.storage.find((item) => {
-            return item.id === id;
-        });
-
-        if(found) {
-            throw new Error('DB - Inconsistent database!')
-        }
-
-        const newItem = {
-            id,
-            title: payload.title,
-            author: payload.author,
-            description: payload.description
-        };
-
-        this.storage.push(newItem);
-
-        this.serialize();
-        return newItem;
+  update(id, payload) {
+    if (
+      !(
+        payload.hasOwnProperty("title") ||
+        payload.hasOwnProperty("author") ||
+        payload.hasOwnProperty("description")
+      )
+    ) {
+      throw new Error("DB: Update - Wrong payload");
     }
 
-    update(id, payload){
+    const found = this.storage.find((item) => {
+      return item.id === id;
+    });
 
-         if(!(payload.hasOwnProperty('title') || 
-        payload.hasOwnProperty('author') || 
-        payload.hasOwnProperty('description'))) {
-            throw new Error('DB: Update - Wrong payload');
-        }
-
-
-           const found = this.storage.find((item) => {
-            return item.id === id;
-        });
-
-        if(!found) {
-            throw new Error('DB: Update - Not Found!');
-        }
-
-        const idx = this.storage.indexOf(found);
-
-        const validKeys = ['title', 'author', 'description'];
-        const keys = Object.keys(payload);
-
-        for (const key of keys) {
-            if(validKeys.includes(key)){
-            found[key] = payload[key];
-            }
-        }
-
-        this.storage[idx] = found;
-        this.serialize();
+    if (!found) {
+      throw new Error("DB: Update - Not Found!");
     }
 
+    const idx = this.storage.indexOf(found);
 
-    getOne(id) {
-         const found = this.storage.find((item) => {
-            return item.id === id;
-        });
+    const validKeys = ["title", "author", "description"];
+    const keys = Object.keys(payload);
 
-        if(!found) {
-            throw new Error('DB: GetOne - Not Found!');
-        }
-        return found;
+    for (const key of keys) {
+      if (validKeys.includes(key)) {
+        found[key] = payload[key];
+      }
     }
 
-    delete(id){
-        
-        const found = this.storage.find((item) => {
-            return item.id === id;
-        });
+    this.storage[idx] = found;
+    this.serialize();
+  }
 
-        if(!found) {
-            throw new Error('DB:delete - Item not found!')
-        }
+  getOne(id) {
+    const found = this.storage.find((item) => {
+      return item.id === id;
+    });
 
-        const idx = this.storage.indexOf(found);
+    if (!found) {
+      throw new Error("DB: GetOne - Not Found!");
+    }
+    return found;
+  }
 
-        this.storage.splice(idx, 1);
+  delete(id) {
+    const found = this.storage.find((item) => {
+      return item.id === id;
+    });
 
-        this.serialize();
-
+    if (!found) {
+      throw new Error("DB:delete - Item not found!");
     }
 
+    const idx = this.storage.indexOf(found);
 
-    // debug() {
-    //     console.log('debug: this.storage', this.storage);
-    // }
+    this.storage.splice(idx, 1);
 
+    this.serialize();
+  }
+
+  // debug() {
+  //     console.log('debug: this.storage', this.storage);
+  // }
 }
